@@ -9,12 +9,14 @@ branches:
 
 before_install:
   - sudo apt-get update -qq
+  - sudo apt-get install -qq make python3-bs4 xsltproc
 
 before_script:
 
 script:
   - make
-  - git clone https://github.com/csfc/csfc.github.io.git
+  - git clone https://github.com/CSfC/csfc.github.io.git
+  - git clone https://github.com/CSfC/ci-scripts.git
   - mkdir -p csfc.github.io/pp/$(basename $TRAVIS_REPO_SLUG)
   - rm -rf csfc.github.io/pp/$(basename $TRAVIS_REPO_SLUG)/*
   - cp -r output/* csfc.github.io/pp/$(basename $TRAVIS_REPO_SLUG)
@@ -23,6 +25,8 @@ script:
   - git diff-index --quiet HEAD || git commit -m "Deploying changes"
   - git pull --rebase
   - cd -
+  - chmod 700 ci-scripts/create_site.sh
+  - ./ci-scripts/create_site.sh
   
 # Deploy HTML pages and updated index.html (needed before we can generate pdf versions)
 deploy:
@@ -30,7 +34,7 @@ deploy:
   skip_cleanup: true
   github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
   local_dir: csfc.github.io/
-  repo: csfc/csfc.github.io
+  repo: CSfC/commoncriteria.github.io
   target_branch: master
   on:
     branch: master
